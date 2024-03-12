@@ -60,6 +60,7 @@ class AccelerateRLTrainer(BaseRLTrainer):
         self.scheduler = self.setup_scheduler()
 
         self.tokenizer = AutoTokenizer.from_pretrained(config.tokenizer.tokenizer_path)
+        self.tokenizer.model_max_length = 4096
         self.tokenizer.padding_side = config.tokenizer.padding_side
         self.tokenizer.truncation_side = config.tokenizer.truncation_side
         self.tokenizer.sep_token = "<sep>"
