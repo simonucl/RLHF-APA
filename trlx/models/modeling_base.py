@@ -126,6 +126,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
 
         if isinstance(pretrained_model_name_or_path, str):
             # Load the base model using the `transformers` AutoClass (e.g. AutoModelForCausalLM)
+            print(f"Loading model from {pretrained_model_name_or_path}")
             base_model = cls._auto_model_parent_class.from_pretrained(
                 pretrained_model_name_or_path, *model_args, revision=revision, **from_pretrained_kwargs
             )
