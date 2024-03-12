@@ -80,7 +80,7 @@ def prepare_tensor(name: str, input):
     return t
 
 
-def main(args):
+def main(hparams={}):
     output_dir = OUTPUT_DIR
     default_config = TRLConfig(
     train=TrainConfig(
@@ -95,7 +95,7 @@ def main(args):
         checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan",
         seed=RANDOM_SEED,
     ),
-    model=ModelConfig(model_path=args.ckpt, num_layers_unfrozen=-1),
+    model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500', num_layers_unfrozen=-1),
     tokenizer=TokenizerConfig(tokenizer_path="EleutherAI/gpt-neo-1.3B", padding_side="left"),
     optimizer=OptimizerConfig(name="adamw", kwargs=dict(lr=1e-6, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)),
     scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1e-6)),
@@ -126,7 +126,7 @@ def main(args):
         ),
     ),
 )
-    config = TRLConfig.update(default_config)
+    config = TRLConfig.update(default_config, hparams)
     config.train.checkpoint_dir = output_dir
     config.train.logging_dir = output_dir
     config.train.tracker = "wandb"
@@ -161,5 +161,5 @@ def main(args):
 
 if __name__ == "__main__":
 
-    args = parser.parse_args()
-    main(args)
+    hparams = {} if len(sys.argv) == 1 else json.loads(sys.argv[1])
+    main(hparams)
