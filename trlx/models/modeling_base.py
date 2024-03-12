@@ -148,7 +148,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
             is_sharded = False
 
             
-            model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path)
+            # model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path)
             # if not os.path.exists(filename):
                 # try:
                     # filename = hf_hub_download(pretrained_model_name_or_path, "pytorch_model.bin", revision=revision)
