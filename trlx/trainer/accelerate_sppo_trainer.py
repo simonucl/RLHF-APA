@@ -432,6 +432,7 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
                 logprobs = logprobs_of_labels(logits[:, :-1, :], sample_outputs[:, 1:])
                 ref_logprobs = logprobs_of_labels(ref_logits[:, :-1, :], sample_outputs[:, 1:])
             else:
+                print(type(logits), type(all_tokens))
                 logprobs = logprobs_of_labels(logits[:, :-1, :], all_tokens[:, 1:])
                 # logprobs = torch.gather(logits[:, :-1, :], dim=-1, index=all_tokens[:, 1:].unsqueeze(-1)).squeeze(-1)
                 ref_logprobs = logprobs_of_labels(ref_logits[:, :-1, :], all_tokens[:, 1:])
