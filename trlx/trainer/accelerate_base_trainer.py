@@ -89,11 +89,12 @@ class AccelerateRLTrainer(BaseRLTrainer):
 
             if config.train.tracker == "wandb":
                 init_trackers_kwargs["wandb"] = {
-                    "name": run_name,
-                    "entity": self.config.train.entity_name,
+                    "name": "apa",
+                    "entity": "cocolab",
                     "group": self.config.train.group_name,
                     "tags": ["/".join(get_git_tag())],
                     "mode": "disabled" if os.environ.get("debug", False) else "online",
+                    "dir": self.config.train.logging_dir,
                 }
 
                 self.accelerator.init_trackers(
