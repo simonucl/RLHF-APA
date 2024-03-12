@@ -229,7 +229,7 @@ class SPPOConfig(MethodConfig):
                 policy_loss=pg_loss.item(),
                 sq_loss=sq_loss.item(),
                 awac_loss = awac_loss.item(),
-                sq_q_loss=sq_q_loss.item(),
+                # sq_q_loss=sq_q_loss.item(),
                 value_loss=vf_loss.item(),
             ),
             values=dict(
