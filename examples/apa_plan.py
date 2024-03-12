@@ -87,7 +87,7 @@ def main(hparams={}):
         seq_length=4096,
         epochs=10000,
         total_steps=20000,
-        batch_size=2,
+        batch_size=4,
         checkpoint_interval=500,
         eval_interval=500,
         pipeline="PromptPipeline",
@@ -101,7 +101,7 @@ def main(hparams={}):
     scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1e-6)),
     method=SPPOConfig(
         name="SPPOConfig",
-        num_rollouts=1,
+        num_rollouts=4,
         chunk_size=1,
         ppo_epochs=2,
         init_kl_coef=0.05,
@@ -122,7 +122,7 @@ def main(hparams={}):
         gen_kwargs=dict(
             max_new_tokens=4000,
             do_sample=True,
-            temperature=0.8,
+            temperature=1.0,
         ),
     ),
 )
