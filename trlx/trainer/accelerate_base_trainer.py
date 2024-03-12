@@ -94,7 +94,7 @@ class AccelerateRLTrainer(BaseRLTrainer):
                     "group": self.config.train.group_name,
                     "tags": ["/".join(get_git_tag())],
                     "mode": "disabled" if os.environ.get("debug", False) else "online",
-                    "dir": '/scr/kanishkg/wandb',
+                    "dir": '/scr/kanishkg',
                 }
 
                 self.accelerator.init_trackers(
