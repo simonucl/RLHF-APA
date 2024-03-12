@@ -139,6 +139,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
                 "Expected `str` or `transformers.PreTrainedModel`."
             )
 
+        print(cls._auto_model_parent_class, base_model)
         model = cls(base_model, **wrapped_model_kwargs)
 
         if isinstance(pretrained_model_name_or_path, str):
