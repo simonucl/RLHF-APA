@@ -148,8 +148,6 @@ def main(hparams={}):
     prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
     eval_prompts = prompts[:100]
 
-    reward_fn = metric_fn
-
     trlx.train(
         prompts=prompts,
         eval_prompts=eval_prompts,

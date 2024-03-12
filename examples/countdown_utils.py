@@ -158,6 +158,13 @@ def metric_fn(search_path, mode="dt"):
             max_nodes = 46080
         return (max(1.-score/max_nodes, 0.0), rating)
     return (0., rating)
+
+def reward_fn(samples, prompts, outputs):
+    rewards = []
+    for sample in samples:
+        rating, _ = metric_fn(sample)
+        rewards.append(rating)
+    return rewards
     
 if __name__ == "__main__":
     trajectory = """Current State: 47:[42, 61, 66], Operations: []
