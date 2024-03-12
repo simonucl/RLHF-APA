@@ -135,7 +135,7 @@ def parse_trajectory(search_path, mode="dt"):
 
     return "Valid path."
 
-def metric_fn(search_path, mode="dt"):
+def metric_fn(search_path, mode="sft"):
     rating = parse_trajectory(search_path, mode=mode)
     if rating == "Valid path.":
         score = simple_rating(search_path)
