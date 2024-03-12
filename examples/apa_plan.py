@@ -34,7 +34,7 @@ RANDOM_SEED = 0
 LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 10
 ADV_COEFF_LOG = 0.5
-OUTPUT_DIR = "scr/kanishkg/trl/outputs"
+OUTPUT_DIR = "/scr/kanishkg/trl/outputs"
 
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
