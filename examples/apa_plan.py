@@ -27,8 +27,8 @@ from trlx.data.default_configs import (
 )
 import random
 
-parser = argparse.ArgumentParser(description='Train with APA.')
-parser.add_argument('--ckpt', type=str, default=None, help='Path to the checkpoint to load')
+# parser = argparse.ArgumentParser(description='Train with APA.')
+# parser.add_argument('--ckpt', type=str, default=None, help='Path to the checkpoint to load')
 
 RANDOM_SEED = 0
 LOSS = "square" # "square" or "log", square for APA and log for AWR
