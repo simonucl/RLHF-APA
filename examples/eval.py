@@ -57,7 +57,7 @@ def eval_ll(model, tokenizer, data, batch_size=128, context_len=4096, temperatur
 args = parser.parse_args()
 
 model = AutoModelForCausalLMWithHydraValueHead.from_pretrained('/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500')
-state_dict = torch.load('/scr/kanishkg/trl/outputs/checkpoint_01000/pytorch_model/mp_rank_00_model_states.pt', device='cpu')
+state_dict = torch.load('/scr/kanishkg/trl/outputs/checkpoint_01000/pytorch_model/mp_rank_00_model_states.pt')
 
 model.load_state_dict(state_dict)
 
