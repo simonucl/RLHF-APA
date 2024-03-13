@@ -59,7 +59,7 @@ args = parser.parse_args()
 model = AutoModelForCausalLMWithHydraValueHead.from_pretrained('/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500')
 state_dict = torch.load('/scr/kanishkg/trl/outputs/checkpoint_01000/pytorch_model/mp_rank_00_model_states.pt')
 
-model.load_state_dict(state_dict)
+model.post_init(state_dict=state_dict)
 
 model.eval()
 tokenizer = AutoTokenizer.from_pretrained('EleutherAI/gpt-neo-1.3B', padding_side='left')
