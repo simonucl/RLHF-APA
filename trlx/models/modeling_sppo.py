@@ -310,6 +310,7 @@ class AutoModelForCausalLMWithValueHead(PreTrainedModelWrapper):
         forward_kwargs["return_dict"] = True
 
         outputs = self.base_model(**forward_kwargs)
+        print("using vnet")
         v_net_outputs = self.v_net(**forward_kwargs)
         value = self.v_head(v_net_outputs.hidden_states[-1]).squeeze(-1)
         if not return_dict:
