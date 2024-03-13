@@ -52,6 +52,7 @@ def eval_ll(model, tokenizer, data, batch_size=128, context_len=4096, temperatur
             # print token lens of tokenized outputs
             print([len(tokenizer(ot)['input_ids']) for ot in output_texts])
             output_texts_concat += output_texts
+    return output_texts_concat
 
 
 args = parser.parse_args()
