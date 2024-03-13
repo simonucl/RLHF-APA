@@ -61,6 +61,7 @@ state_dict = torch.load('/scr/kanishkg/trl/outputs/checkpoint_01000/pytorch_mode
 
 model.post_init(state_dict=state_dict)
 
+model.to("cuda")
 model.eval()
 tokenizer = AutoTokenizer.from_pretrained('EleutherAI/gpt-neo-1.3B', padding_side='left')
 tokenizer.pad_token = tokenizer.eos_token
