@@ -58,7 +58,7 @@ def eval_ll(model, tokenizer, data, batch_size=128, context_len=4096, temperatur
 args = parser.parse_args()
 
 model = AutoModelForCausalLMWithHydraValueHead.from_pretrained('/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500')
-state_dict = torch.load('/scr/kanishkg/trl/outputs/checkpoint_01000/pytorch_model/mp_rank_00_model_states.pt')
+state_dict = torch.load(args.pt)
 
 base_model_state_dict = {k:state_dict['module'][k] for k in state_dict['module'].keys() if 'v_head' not in k}
 model.base_model.load_state_dict(base_model_state_dict)
