@@ -123,6 +123,7 @@ def main(hparams={}):
             max_new_tokens=4000,
             do_sample=True,
             temperature=1.0,
+            stop_sequences=["Goal Reached"],
         ),
     ),
 )

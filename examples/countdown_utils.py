@@ -162,6 +162,7 @@ def metric_fn(search_path, mode="sft"):
 def reward_fn(samples, prompts, outputs):
     rewards = []
     for sample in samples:
+        sample = sample + "Goal Reached"
         rating, _ = metric_fn(sample)
         rewards.append(rating)
     return rewards
