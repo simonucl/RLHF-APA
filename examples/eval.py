@@ -3,6 +3,7 @@ import json
 import os
 import torch
 import tqdm
+import numpy as np
 from trlx.models.modeling_sppo import (
     AdaptiveKLController,
     AutoModelForCausalLMWithHydraValueHead,
@@ -88,3 +89,12 @@ for i in range(len(predictions)):
     pred_ratings.append(rating)
     true_rating.append(tr)
     pred_reasons.append(reason)
+
+# print results
+print("Results Summary:")
+print(f"Average rating: {np.mean(pred_ratings)}")
+print(f"Average true rating: {np.mean(true_rating)}")
+# print accuracy ie rating > 0
+print(f"Accuracy: {np.mean([r > 0 for r in pred_ratings])}")
+print(f"True Accuracy: {np.mean([r > 0 for r in true_rating])}")
+
