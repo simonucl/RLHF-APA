@@ -56,6 +56,10 @@ class AccelerateRLTrainer(BaseRLTrainer):
             torch.distributed.barrier(device_ids=[int(os.environ.get("LOCAL_RANK", 0))])
 
         self.model = self.setup_model()
+        device = self.accelerator.device
+        self.base_model = self.base_model.to(device)
+        self.v_net = self.v_net.to(device)
+        self.v_head = self.v_head.to(device)
         self.opt = self.setup_optimizer()
         self.scheduler = self.setup_scheduler()
 
