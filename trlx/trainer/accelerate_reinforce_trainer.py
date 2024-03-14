@@ -39,7 +39,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
     tokenizer: AutoTokenizer
 
     def __init__(self, config: TRLConfig, **kwargs):
-        """Rei Accelerate Trainer initialization
+        """Reinforce Accelerate Trainer initialization
 
         Args:
             config: Config
