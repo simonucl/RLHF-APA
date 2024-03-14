@@ -76,6 +76,11 @@ class ReinforceRolloutStorage(BaseRolloutStore):
                     padding_value=0.0,
                     batch_first=True,
                 ),
+                pad_sequence(
+                    [elem.kl for elem in elems],
+                    padding_value=0.0,
+                    batch_first=True,
+                ),
             )
 
         return DataLoader(self, batch_size, shuffle=shuffle, collate_fn=collate_fn)
