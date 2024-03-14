@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 import transformers
 from torch.utils.data import DataLoader
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 import trlx.utils.logging as logging
 from trlx.data.accelerate_base_datatypes import PromptBatch
@@ -24,7 +24,7 @@ from trlx.models.modeling_ppo import (
 from trlx.pipeline.offline_pipeline import PromptPipeline
 from trlx.pipeline.ppo_pipeline import PPORolloutStorage
 from trlx.trainer import register_trainer
-from trlx.trainer.accelerate_base_trainer import AccelerateRLTrainer
+from trlx.trainer.accelerate_base_trainer import AccelerateRLTrainerNoV
 from trlx.utils import Clock, infinite_dataloader
 from trlx.utils.modeling import RunningMoments, logprobs_of_labels
 
@@ -32,7 +32,7 @@ logger = logging.get_logger(__name__)
 
 
 @register_trainer
-class AccelerateReinforceTrainer(AccelerateRLTrainer):
+class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
     """Reinforce Accelerate Trainer"""
 
     reward_fn: Callable[[List[str], List[str], List[str]], List[float]]
@@ -120,9 +120,9 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
 
     def get_arch(self, config: TRLConfig):
         """Get the model"""
-        model_class = AutoModelForCausalLMWithHydraValueHead
+        model_class = AutoModelForCausalLM
         if config.model.model_arch_type == "seq2seq":
-            model_class = AutoModelForSeq2SeqLMWithHydraValueHead
+            model_class = AutoModelForSeq2SeqLM
 
         from_fn = model_class.from_pretrained
         # backward-compat: Try to create a randomly initialized architecture from a config
@@ -144,11 +144,8 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
         query_tensors = batch.query_tensors.to(self.accelerator.device)
         response_tensors = batch.response_tensors.to(self.accelerator.device)
         old_logprobs = batch.logprobs.to(self.accelerator.device)
-        old_values = batch.values.to(self.accelerator.device)
         old_rewards = batch.rewards.to(self.accelerator.device)
         response_length = old_rewards.shape[1]
-
-        advantages, returns = self.config.method.get_advantages_and_returns(old_values, old_rewards, response_length)
 
         if self.config.model.model_arch_type == "seq2seq":
             input_ids = query_tensors
@@ -168,14 +165,12 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
             )
 
             logits = outputs.logits
-            values_pred = outputs.value
             logprobs = logprobs_of_labels(logits[:, :-1, :], decoder_input_ids[:, 1:])
             mask = decoder_input_ids.ne(self.tokenizer.pad_token_id).long().to(self.accelerator.device)
             start = 0
             end = start + response_length
-            logprobs, values_pred, mask = (
+            logprobs, mask = (
                 logprobs[:, start:end],
-                values_pred[:, start:end],
                 mask[:, start:end],
             )
         else:
@@ -183,25 +178,18 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
             attention_mask = tokens.not_equal(self.tokenizer.pad_token_id).long().to(tokens.device)
             outputs = self.model(tokens, attention_mask, return_dict=True)
             logits = outputs.logits
-            values_pred = outputs.value
-            values_pred = values_pred[:, :-1]
             logprobs = logprobs_of_labels(logits[:, :-1, :], tokens[:, 1:])
 
             start = query_tensors.shape[1] - 1
             end = start + response_length
-            logprobs, values_pred, mask = (
+            logprobs, mask = (
                 logprobs[:, start:end],
-                values_pred[:, start:end],
                 attention_mask[:, start:end],
             )
 
         loss, stats = self.config.method.loss(
             logprobs=logprobs,
-            values=values_pred,
             old_logprobs=old_logprobs,
-            old_values=old_values,
-            advantages=advantages,
-            returns=returns,
             mask=mask,
         )
 
@@ -380,7 +368,6 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
                         decoder_attention_mask=decoder_attention_mask,
                     )
                     logits = outputs.logits
-                    values = outputs.value
                     if hasattr(self.model, "frozen_head"):
                         ref_logits = self.model.forward_hydra(
                             input_ids=prompt_tensors,
@@ -407,7 +394,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
                     )
                     # TODO(dahoas): When hydra model works need to also support generation on hydra head
                     if hasattr(self.model, "frozen_head"):
-                        ref_logits = self.model.forward_hydra(
+                        ref_logits = self.model.forward(
                             all_tokens,
                             attention_mask=attention_mask,
                             return_dict=True,
@@ -443,13 +430,11 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
             ref_logprobs = ref_logprobs.cpu()
             prompt_tensors = prompt_tensors.cpu()
             sample_outputs = sample_outputs.cpu()
-            values = values.cpu()[:, :-1]
 
             ends = start + attention_mask[:, start:].sum(1)
 
             # Get the logprobs and values, for tokens that are not padding
             # or beginning of sequences tokens. These are from the model (not the reference model)
-            all_values = [values[ix, start : ends[ix]] for ix in range(n_samples)]
             all_logprobs = [logprobs[ix, start : ends[ix]] for ix in range(n_samples)]
 
             kl_penalty = self.kl_ctl.value * -log_ratio.cpu() 
@@ -469,7 +454,6 @@ class AccelerateReinforceTrainer(AccelerateRLTrainer):
                         query_tensor=prompt_tensors[sample_idx],
                         response_tensor=sample_outputs[sample_idx],
                         logprobs=all_logprobs[sample_idx],
-                        values=all_values[sample_idx],
                         rewards=rewards,
                     )
                 )
