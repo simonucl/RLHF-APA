@@ -61,7 +61,8 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
         # Create the rollout store dataloader (for batching up rollouts)
         # TODO (jon-tow): This is only used to satisfy to `accelerator.prepare` call constraint below - remove in future
         rollout_loader: DataLoader = self.store.create_loader(self.config.train.batch_size, shuffle=True)
-        device = torch.cuda.device_count() - 3
+        # device = torch.cuda.device_count() - 3
+        device = self.accelerator.device 
         self.ref_model = deepcopy(self.model).eval().to(device) 
         # self.ref_model = self.ref_model
         # Prepare multi-GPU acceleration

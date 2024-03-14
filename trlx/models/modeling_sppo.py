@@ -277,8 +277,11 @@ class AutoModelForCausalLMWithValueHead(PreTrainedModelWrapper):
         super().__init__(base_model)
         self.v_head = make_head(hf_get_hidden_size(self.base_model.config), 1)
         self.v_net = deepcopy(base_model) 
-        device = torch.cuda.device_count() - 2
+        device = self.accelerator.device
+        # device = torch.cuda.device_count() - 2
+        # use the device of the base model
         print("Vdevice", device)
+        self.base_model = self.base_model.to(device)
         self.v_net = self.v_net.to(device)
         self.v_head = self.v_head.to(device)
     def forward(
