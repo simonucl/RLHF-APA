@@ -141,7 +141,7 @@ def main(hparams={}):
     with open(val_file, "r") as json_file:
         val_data = json.load(json_file)
     val_prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
-    eval_prompts = val_prompts[:1]
+    eval_prompts = val_prompts[:100]
 
     trlx.train(
         prompts=prompts,
