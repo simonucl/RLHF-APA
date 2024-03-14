@@ -128,7 +128,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
         # backward-compat: Try to create a randomly initialized architecture from a config
         # if issubclass(type(config.model.model_path), transformers.PretrainedConfig):
         #     from_fn = model_class.from_config
-        model = GPTNeoForCausalLM.from_pretrained(pretrained_model_name_or_path, torch_dtype=torch.bfloat16, attn_implementation='flash_attention_2')
+        model = GPTNeoForCausalLM.from_pretrained('/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500', torch_dtype=torch.bfloat16, attn_implementation='flash_attention_2')
         return model
         # return from_fn(
         #     config.model.model_path,
