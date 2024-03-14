@@ -283,6 +283,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
             device = samples.device
 
             prompt_sizes = torch.tensor([prompt_tensors.shape[1]] * len(prompt_tensors), device=device)
+            print("prompt_tensors size:", prompt_tensors.shape)
             padded_samples = self.accelerator.pad_across_processes(
                 samples, dim=1, pad_index=self.tokenizer.eos_token_id, pad_first=False
             )
