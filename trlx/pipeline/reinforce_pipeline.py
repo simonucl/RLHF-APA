@@ -3,6 +3,7 @@ import os
 import time
 from typing import Iterable
 
+import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 
@@ -71,11 +72,7 @@ class ReinforceRolloutStorage(BaseRolloutStore):
                     padding_value=0.0,
                     batch_first=True,
                 ),
-                pad_sequence(
-                    [elem.rewards for elem in elems],
-                    padding_value=0.0,
-                    batch_first=True,
-                ),
+                    torch.stack([elem.rewards for elem in elems], dim=0),
                 pad_sequence(
                     [elem.kl for elem in elems],
                     padding_value=0.0,
