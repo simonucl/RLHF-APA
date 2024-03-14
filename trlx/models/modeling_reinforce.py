@@ -149,6 +149,7 @@ class ReinforceConfig(MethodConfig):
         print(f"nll_loss: {nll_loss.shape}")
         pg_loss = (nll_loss * (returns - bias_estimate)).mean()
         print(f"pg_loss: {pg_loss.shape}")
+        print(f"kl requires grad {kl.requires_grad}")
         kl_loss = (kl * mask).sum() / n
         loss = pg_loss + kl_loss
 
@@ -158,7 +159,7 @@ class ReinforceConfig(MethodConfig):
                 kl_loss=kl_loss.item(),
                 pg_loss=pg_loss.item(),
             ),
-            returns=get_tensor_stats(returns, mask, n),
+            returns=returns.mean().item(),
             policy=dict(approx_kl=approx_kl.item()),
             ratio=(ratio * mask).sum() / n,
             padding_percentage=n / mask.numel(),
