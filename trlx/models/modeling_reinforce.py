@@ -26,6 +26,7 @@ from trlx.utils.modeling import (
     hf_get_num_hidden_layers,
     make_head,
     whiten,
+    get_global_statistics
 )
 
 # KL Controllers
@@ -126,7 +127,6 @@ class ReinforceConfig(MethodConfig):
         self,
         logprobs: TensorType["batch_size", "response_size"],
         old_logprobs: TensorType["batch_size", "response_size"],
-        old_values: TensorType["batch_size", "response_size"],
         returns: TensorType["batch_size", "response_size"],
         mask: TensorType["batch_size", "response_size"],
     ):
@@ -134,16 +134,7 @@ class ReinforceConfig(MethodConfig):
         References:
         - https://stable-baselines.readthedocs.io/en/master/modules/ppo2.html
         """
-        values_clipped = torch.clamp(
-            values,
-            old_values - self.cliprange_value,
-            old_values + self.cliprange_value,
-        )
         n = mask.sum()
-        vf_loss1 = (values - returns) ** 2
-        vf_loss2 = (values_clipped - returns) ** 2
-        vf_loss = 0.5 * torch.sum(torch.max(vf_loss1, vf_loss2) * mask) / n
-        vf_clipfrac = torch.sum((vf_loss2 > vf_loss1).float() * mask) / n
 
         log_ratio = (logprobs - old_logprobs) * mask
         ratio = torch.exp(log_ratio)
@@ -151,31 +142,18 @@ class ReinforceConfig(MethodConfig):
         with torch.no_grad():
             approx_kl = torch.mean((ratio - 1) - log_ratio)
 
-        pg_loss1 = -advantages * ratio
-        pg_loss2 = -advantages * torch.clamp(
-            ratio,
-            1.0 - self.cliprange,
-            1.0 + self.cliprange,
-        )
-        pg_loss = torch.sum(torch.max(pg_loss1, pg_loss2) * mask) / n
-        pg_clipfrac = torch.sum((pg_loss2 > pg_loss1).float() * mask) / n
-
-        loss = pg_loss + self.vf_coef * vf_loss
+        # simple REINFORCE bias estimate
+        mean, _, _ = get_global_statistics(returns)
+        bias_estimate = mean
+        # REINFORCE loss
+        loss = -(logprobs * (returns-bias_estimate) * mask).sum() / n
 
         stats = dict(
             losses=dict(
                 total_loss=loss.item(),
-                policy_loss=pg_loss.item(),
-                value_loss=vf_loss.item(),
             ),
-            values=dict(
-                get_tensor_stats(values, mask, n),
-                values_error=torch.sum(((values - returns) * mask) ** 2) / n,
-                clipfrac=vf_clipfrac,
-            ),
-            old_values=get_tensor_stats(old_values, mask, n),
             returns=get_tensor_stats(returns, mask, n),
-            policy=dict(approx_kl=approx_kl.item(), clipfrac=pg_clipfrac.item()),
+            policy=dict(approx_kl=approx_kl.item()),
             ratio=(ratio * mask).sum() / n,
             padding_percentage=n / mask.numel(),
         )

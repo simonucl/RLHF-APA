@@ -9,12 +9,12 @@ import torch
 import torch.nn.functional as F
 import transformers
 from torch.utils.data import DataLoader
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, GPTNeoForCausalLM
 
 import trlx.utils.logging as logging
 from trlx.data.accelerate_base_datatypes import PromptBatch
 from trlx.data.configs import TRLConfig
-from trlx.data.ppo_types import PPORLBatch, PPORLElement
+from trlx.data.reinforce_types import ReinforceRLElement, ReinforceRLBatch
 from trlx.models.modeling_ppo import (
     AdaptiveKLController,
     AutoModelForCausalLMWithHydraValueHead,
@@ -22,7 +22,7 @@ from trlx.models.modeling_ppo import (
     FixedKLController,
 )
 from trlx.pipeline.offline_pipeline import PromptPipeline
-from trlx.pipeline.ppo_pipeline import PPORolloutStorage
+from trlx.pipeline.reinforce_pipeline import ReinforceRolloutStorage
 from trlx.trainer import register_trainer
 from trlx.trainer.accelerate_base_trainer import AccelerateRLTrainerNoV
 from trlx.utils import Clock, infinite_dataloader
@@ -55,7 +55,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
 
         # Setup the rollout store
         # Rollouts contain the prompt & response, log probs, values and rewards - from each rollout
-        self.store = PPORolloutStorage(self.tokenizer.pad_token_id)
+        self.store = ReinforceRolloutStorage(self.tokenizer.pad_token_id)
 
         # Create the rollout store dataloader (for batching up rollouts)
         # TODO (jon-tow): This is only used to satisfy to `accelerator.prepare` call constraint below - remove in future
@@ -120,7 +120,9 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
 
     def get_arch(self, config: TRLConfig):
         """Get the model"""
-        model_class = AutoModelForCausalLM
+        # model_class = AutoModelForCausalLM
+        model_class = GPTNeoForCausalLM
+
         if config.model.model_arch_type == "seq2seq":
             model_class = AutoModelForSeq2SeqLM
 
@@ -131,10 +133,11 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
 
         return from_fn(
             config.model.model_path,
-            num_layers_unfrozen=config.model.num_layers_unfrozen,
+            dtype = torch.bfloat16,
+            attn_implementation='flash_attention_2',
         )
 
-    def loss(self, batch: PPORLBatch):
+    def loss(self, batch: ReinforceRLBatch):
         """Forward pass & loss
 
         Args:
@@ -191,6 +194,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
             logprobs=logprobs,
             old_logprobs=old_logprobs,
             mask=mask,
+            returns=old_rewards,
         )
 
         return loss, stats
@@ -450,7 +454,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
                 rewards[-1] += scores[sample_idx].cpu()
 
                 ppo_rl_elements.append(
-                    PPORLElement(
+                    ReinforceRLElement(
                         query_tensor=prompt_tensors[sample_idx],
                         response_tensor=sample_outputs[sample_idx],
                         logprobs=all_logprobs[sample_idx],
