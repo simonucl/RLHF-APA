@@ -92,7 +92,7 @@ def main(hparams={}):
         eval_interval=200,
         pipeline="PromptPipeline",
         trainer="AccelerateSPPOTrainer",
-        checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan",
+        checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan2",
         seed=RANDOM_SEED,
     ),
     model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500/', num_layers_unfrozen=8),
