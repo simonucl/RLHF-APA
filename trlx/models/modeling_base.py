@@ -129,7 +129,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
             # Load the base model using the `transformers` AutoClass (e.g. AutoModelForCausalLM)
             print(f"Loading model from {pretrained_model_name_or_path}")
             base_model = cls._auto_model_parent_class.from_pretrained(
-                pretrained_model_name_or_path, *model_args, revision=revision, **from_pretrained_kwargs
+                pretrained_model_name_or_path, *model_args, dtype=torch.bfloat16, attn_implementation='flash_attention_2', revision=revision, **from_pretrained_kwargs
             )
         elif isinstance(pretrained_model_name_or_path, transformers.PreTrainedModel):
             base_model = pretrained_model_name_or_path
@@ -140,7 +140,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
             )
 
         print(cls._auto_model_parent_class, base_model)
-        model = cls(base_model, dtype=torch.bfloat16, attn_implementation='flash_attention_2', **wrapped_model_kwargs)
+        model = cls(base_model, **wrapped_model_kwargs)
 
         if isinstance(pretrained_model_name_or_path, str):
             filename = os.path.join(pretrained_model_name_or_path, "pytorch_model.bin")
