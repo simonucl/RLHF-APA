@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Union
 import torch
 import torch.nn as nn
 import transformers
-from transformers import AutoModelForCausalLM
+from transformers import AutoModelForCausalLM, GPTNeoForCausalLM
 from huggingface_hub import hf_hub_download
 
 
