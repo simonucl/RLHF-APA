@@ -391,10 +391,11 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
                 all_tokens = torch.cat((prompt_tensors.to(device), sample_outputs), dim=1)
                 attention_mask = all_tokens.not_equal(self.tokenizer.pad_token_id).long().to(device)
                 with torch.no_grad():
-                    logits, *_, values = self.model(
+                    outputs = self.model(
                         all_tokens,
                         attention_mask=attention_mask,
                     )
+                    logits = outputs.logits
                     # TODO(dahoas): When hydra model works need to also support generation on hydra head
                     if hasattr(self.model, "frozen_head"):
                         ref_logits = self.model.forward(
