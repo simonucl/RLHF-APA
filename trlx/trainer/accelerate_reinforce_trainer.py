@@ -458,7 +458,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
                         query_tensor=prompt_tensors[sample_idx],
                         response_tensor=sample_outputs[sample_idx],
                         logprobs=all_logprobs[sample_idx],
-                        rewards=rewards,
+                        rewards=rewards[sample_idx],
                         kl=kl_penalty[sample_idx],
                     )
                 )
