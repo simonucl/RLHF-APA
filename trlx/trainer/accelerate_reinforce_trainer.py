@@ -124,16 +124,17 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
         if config.model.model_arch_type == "seq2seq":
             model_class = AutoModelForSeq2SeqLM
 
-        from_fn = GPTNeoForCausalLM.from_pretrained
+        # from_fn = GPTNeoForCausalLM.from_pretrained
         # backward-compat: Try to create a randomly initialized architecture from a config
-        if issubclass(type(config.model.model_path), transformers.PretrainedConfig):
-            from_fn = model_class.from_config
-
-        return from_fn(
-            config.model.model_path,
-            dtype = torch.bfloat16,
-            attn_implementation='flash_attention_2',
-        )
+        # if issubclass(type(config.model.model_path), transformers.PretrainedConfig):
+        #     from_fn = model_class.from_config
+        model = GPTNeoForCausalLM.from_pretrained(pretrained_model_name_or_path, torch_dtype=torch.bfloat16, attn_implementation='flash_attention_2')
+        return model
+        # return from_fn(
+        #     config.model.model_path,
+        #     dtype = torch.bfloat16,
+        #     attn_implementation='flash_attention_2',
+        # )
 
     def loss(self, batch: ReinforceRLBatch):
         """Forward pass & loss
