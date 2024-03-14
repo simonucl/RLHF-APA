@@ -123,7 +123,6 @@ def main(hparams={}):
             max_new_tokens=4000,
             do_sample=True,
             temperature=1.0,
-            stop_sequences=["Goal Reached"],
         ),
     ),
 )
@@ -154,7 +153,7 @@ def main(hparams={}):
         eval_prompts=eval_prompts,
         reward_fn=reward_fn,
         config=config,
-        stop_sequences=["assistant:"],
+        stop_sequences=["Goal Reached"],
     )
 
 
