@@ -145,8 +145,8 @@ def main(hparams={}):
     val_file = os.path.join('/scr/kanishkg/rational-cot/data/b4_3_random', 'val1_b4_t100_n500000_random.json')
     with open(val_file, "r") as json_file:
         val_data = json.load(json_file)
-    prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
-    eval_prompts = prompts[:50]
+    val_prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
+    eval_prompts = val_prompts[:50]
 
     trlx.train(
         prompts=prompts,
