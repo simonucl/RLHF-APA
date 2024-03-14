@@ -144,9 +144,8 @@ class ReinforceConfig(MethodConfig):
         mean, _, _ = get_global_statistics(returns)
         bias_estimate = mean
         # REINFORCE loss
-        # print(f"logprobs: {logprobs.shape}, mask: {mask.shape}, returns: {returns.shape})")
+        # returns are of shape (batch_size,)
         nll_loss = -(logprobs * mask).sum(1) / n
-        # print(f"nll_loss: {nll_loss.shape}")
         returns_unbiased = returns - bias_estimate
         # clip returns to 0, to avoid negative values
         returns_unbiased = torch.clamp(returns_unbiased, min=0)
@@ -161,6 +160,7 @@ class ReinforceConfig(MethodConfig):
                 total_loss=loss.item(),
                 kl_loss=kl_loss.item(),
                 pg_loss=pg_loss.item(),
+                nll_loss=nll_loss.mean().item(),
             ),
             returns=returns.mean().item(),
             policy=dict(approx_kl=approx_kl.item()),
