@@ -11,6 +11,7 @@ from trlx.trainer.accelerate_ppo_trainer import AcceleratePPOTrainer
 from trlx.trainer.accelerate_sppo_trainer import AccelerateSPPOTrainer
 from trlx.trainer.accelerate_sft_trainer import AccelerateSFTTrainer
 from trlx.trainer.accelerate_sqloff_trainer import AccelerateSQLOffTrainer
+from trlx.trainer.accelerate_reinforce_trainer import AccelerateReinforceTrainer
 # try:
 #     from trlx.trainer.nemo_ilql_trainer import NeMoILQLTrainer
 # except ImportError:
