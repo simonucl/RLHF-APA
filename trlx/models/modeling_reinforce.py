@@ -127,8 +127,9 @@ class ReinforceConfig(MethodConfig):
         self,
         logprobs: TensorType["batch_size", "response_size"],
         old_logprobs: TensorType["batch_size", "response_size"],
-        returns: TensorType["batch_size", "response_size"],
+        returns: TensorType["batch_size"],
         mask: TensorType["batch_size", "response_size"],
+        kl: TensorType["batch_size", "response_size"],
     ):
         """REINFORCE objective function."""
         n = mask.sum()
@@ -143,11 +144,15 @@ class ReinforceConfig(MethodConfig):
         mean, _, _ = get_global_statistics(returns)
         bias_estimate = mean
         # REINFORCE loss
-        loss = -(logprobs * (returns-bias_estimate) * mask).sum() / n
+        pg_loss = -(logprobs * (returns-bias_estimate) * mask).sum() / n
+        kl_loss = (kl * mask).sum() / n
+        loss = pg_loss + kl_loss
 
         stats = dict(
             losses=dict(
                 total_loss=loss.item(),
+                kl_loss=kl_loss.item(),
+                pg_loss=pg_loss.item(),
             ),
             returns=get_tensor_stats(returns, mask, n),
             policy=dict(approx_kl=approx_kl.item()),

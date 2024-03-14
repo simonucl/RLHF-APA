@@ -147,6 +147,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
         response_tensors = batch.response_tensors.to(self.accelerator.device)
         old_logprobs = batch.logprobs.to(self.accelerator.device)
         old_rewards = batch.rewards.to(self.accelerator.device)
+        kl = batch.kl.to(self.accelerator.device)
         response_length = old_rewards.shape[1]
 
         if self.config.model.model_arch_type == "seq2seq":
@@ -194,6 +195,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
             old_logprobs=old_logprobs,
             mask=mask,
             returns=old_rewards,
+            kl=kl
         )
 
         return loss, stats
@@ -446,12 +448,10 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
 
             rollout_count = 0
 
+            rewards = scores.cpu()
             for sample_idx in range(n_samples):
                 if len(kl_penalty[sample_idx]) == 0 or len(all_logprobs[sample_idx]) == 0:
                     continue
-
-                rewards = kl_penalty[sample_idx] 
-                rewards[-1] += scores[sample_idx].cpu()
 
                 ppo_rl_elements.append(
                     ReinforceRLElement(
@@ -459,6 +459,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
                         response_tensor=sample_outputs[sample_idx],
                         logprobs=all_logprobs[sample_idx],
                         rewards=rewards,
+                        kl=kl_penalty[sample_idx],
                     )
                 )
 

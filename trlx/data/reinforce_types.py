@@ -32,6 +32,7 @@ class ReinforceRLElement:
     response_tensor: TensorType["response_size"]
     logprobs: TensorType["response_size"]
     rewards: TensorType["response_size"]
+    kl: TensorType["response_size"]
 
 
 @dataclass
@@ -58,4 +59,5 @@ class ReinforceRLBatch:
     query_tensors: TensorType["batch_size", "query_size"]
     response_tensors: TensorType["batch_size", "response_size"]
     logprobs: TensorType["batch_size", "response_size"]
-    rewards: TensorType["batch_size", "response_size"]
+    rewards: TensorType["batch_size"]
+    kl: TensorType["batch_size", "response_size"]
