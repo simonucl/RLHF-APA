@@ -427,7 +427,8 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
                     #         return_dict=True,
                     #     ).logits
                     # else:
-                    ref_device = torch.cuda.device_count() - 3
+                    # ref_device = torch.cuda.device_count() - 3
+                    ref_device = self.accelerator.device
                     ref_logits = self.ref_model(
                             all_tokens.to(ref_device),
                             attention_mask=attention_mask.to(ref_device),
