@@ -149,7 +149,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
         old_logprobs = batch.logprobs.to(self.accelerator.device)
         old_rewards = batch.rewards.to(self.accelerator.device)
         kl = batch.kl.to(self.accelerator.device)
-        response_length = old_rewards.shape[1]
+        response_length = kl.shape[1]
 
         if self.config.model.model_arch_type == "seq2seq":
             input_ids = query_tensors
