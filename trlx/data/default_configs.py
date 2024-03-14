@@ -178,8 +178,6 @@ def default_reinforce_config():
             gamma=1,
             lam=0.95,
             cliprange=0.2,
-            cliprange_value=0.2,
-            vf_coef=1,
             scale_reward="ignored",
             ref_mean=None,
             ref_std=None,
