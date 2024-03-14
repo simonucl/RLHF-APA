@@ -124,7 +124,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
         if config.model.model_arch_type == "seq2seq":
             model_class = AutoModelForSeq2SeqLM
 
-        from_fn = model_class.from_pretrained
+        from_fn = GPTNeoForCausalLM.from_pretrained
         # backward-compat: Try to create a randomly initialized architecture from a config
         if issubclass(type(config.model.model_path), transformers.PretrainedConfig):
             from_fn = model_class.from_config
