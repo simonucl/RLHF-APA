@@ -57,9 +57,9 @@ class AccelerateRLTrainer(BaseRLTrainer):
 
         self.model = self.setup_model()
         device = self.accelerator.device
-        self.base_model = self.base_model.to(device)
-        self.v_net = self.v_net.to(device)
-        self.v_head = self.v_head.to(device)
+        self.model.base_model = self.base_model.to(device)
+        self.model.v_net = self.v_net.to(device)
+        self.model.v_head = self.v_head.to(device)
         self.opt = self.setup_optimizer()
         self.scheduler = self.setup_scheduler()
 
