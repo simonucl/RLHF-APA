@@ -140,7 +140,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
             )
 
         print(cls._auto_model_parent_class, base_model)
-        model = cls(base_model, **wrapped_model_kwargs)
+        model = cls(base_model, dtype=torch.bfloat16, attn_implementation='flash_attention_2', **wrapped_model_kwargs)
 
         if isinstance(pretrained_model_name_or_path, str):
             filename = os.path.join(pretrained_model_name_or_path, "pytorch_model.bin")

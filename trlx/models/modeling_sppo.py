@@ -275,7 +275,7 @@ class AutoModelForCausalLMWithValueHead(PreTrainedModelWrapper):
         base_model: transformers.PreTrainedModel,
     ):
         super().__init__(base_model)
-        self.v_head = make_head(hf_get_hidden_size(self.base_model.config), 1)
+        self.v_head = make_head(hf_get_hidden_size(self.base_model.config), 1, dtype=torch.bfloat16)
         self.v_net = deepcopy(base_model) 
         # device = self.accelerator.device
         # device = torch.cuda.device_count() - 2
@@ -313,7 +313,6 @@ class AutoModelForCausalLMWithValueHead(PreTrainedModelWrapper):
         forward_kwargs["return_dict"] = True
 
         outputs = self.base_model(**forward_kwargs)
-        print("using vnet")
         v_net_outputs = self.v_net(**forward_kwargs)
         value = self.v_head(v_net_outputs.hidden_states[-1]).squeeze(-1)
         if not return_dict:
