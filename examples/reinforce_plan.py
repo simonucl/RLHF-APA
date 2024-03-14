@@ -101,7 +101,7 @@ def main(hparams={}):
     scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1e-6)),
     method=ReinforceConfig(
         name="ReinforceConfig",
-        num_rollouts=1024,
+        num_rollouts=128,
         chunk_size=64,
         ppo_epochs=2,
         init_kl_coef=0.1,
