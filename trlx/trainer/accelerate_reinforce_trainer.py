@@ -143,6 +143,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
             batch: Previous batch of episodes
         """
         # Move `batch` data to `accelerator` device
+        print("batch.query_tensors shape:", batch.query_tensors.shape)
         query_tensors = batch.query_tensors.to(self.accelerator.device)
         response_tensors = batch.response_tensors.to(self.accelerator.device)
         old_logprobs = batch.logprobs.to(self.accelerator.device)
@@ -182,7 +183,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
             outputs = self.model(input_ids=tokens, attention_mask=attention_mask, return_dict=True)
             logits = outputs.logits
             logprobs = logprobs_of_labels(logits[:, :-1, :], tokens[:, 1:])
-
+            print("logprobs shape:", logprobs.shape)
             start = query_tensors.shape[1] - 1
             end = start + response_length
             logprobs, mask = (
