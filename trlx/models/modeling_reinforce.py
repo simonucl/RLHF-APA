@@ -144,7 +144,11 @@ class ReinforceConfig(MethodConfig):
         mean, _, _ = get_global_statistics(returns)
         bias_estimate = mean
         # REINFORCE loss
-        pg_loss = -(logprobs * (returns-bias_estimate) * mask).sum() / n
+        print(f"logprobs: {logprobs.shape}, mask: {mask.shape}, returns: {returns.shape})")
+        nll_loss = -(logprobs * mask).sum(1) / n
+        print(f"nll_loss: {nll_loss.shape}")
+        pg_loss = (nll_loss * (returns - bias_estimate)).mean()
+        print(f"pg_loss: {pg_loss.shape}")
         kl_loss = (kl * mask).sum() / n
         loss = pg_loss + kl_loss
 
