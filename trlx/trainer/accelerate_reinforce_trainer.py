@@ -178,6 +178,7 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
         else:
             tokens = torch.cat((query_tensors, response_tensors), dim=1)
             attention_mask = tokens.not_equal(self.tokenizer.pad_token_id).long().to(tokens.device)
+            print(tokens.shape, attention_mask.shape)
             outputs = self.model(tokens, attention_mask, return_dict=True)
             logits = outputs.logits
             logprobs = logprobs_of_labels(logits[:, :-1, :], tokens[:, 1:])
