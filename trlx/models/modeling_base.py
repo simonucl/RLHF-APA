@@ -130,7 +130,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
             print(f"Loading model from {pretrained_model_name_or_path}")
             # base_model = cls._auto_model_parent_class.from_pretrained(
             #     pretrained_model_name_or_path, *model_args, dtype=torch.bfloat16, attn_implementation='flash_attention_2', revision=revision, **from_pretrained_kwargs
-            #  )
+            #  ) 
             base_model = GPTNeoForCausalLM.from_pretrained(pretrained_model_name_or_path, torch_dtype=torch.bfloat16, attn_implementation='flash_attention_2')
         elif isinstance(pretrained_model_name_or_path, transformers.PreTrainedModel):
             base_model = pretrained_model_name_or_path
