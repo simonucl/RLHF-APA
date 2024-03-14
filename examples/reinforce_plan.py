@@ -87,7 +87,7 @@ def main(hparams={}):
         seq_length=4096,
         epochs=10000,
         total_steps=20000,
-        batch_size=16,
+        batch_size=24,
         checkpoint_interval=100,
         eval_interval=100,
         pipeline="PromptPipeline",
@@ -104,8 +104,8 @@ def main(hparams={}):
         num_rollouts=4,
         chunk_size=4,
         ppo_epochs=2,
-        init_kl_coef=1.,
-        target=1.,
+        init_kl_coef=0.1,
+        target=.1,
         horizon=10000,
         gamma=1,
         lam=0.95,
@@ -141,7 +141,7 @@ def main(hparams={}):
     with open(val_file, "r") as json_file:
         val_data = json.load(json_file)
     val_prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
-    eval_prompts = val_prompts[:50]
+    eval_prompts = val_prompts[:100]
 
     trlx.train(
         prompts=prompts,

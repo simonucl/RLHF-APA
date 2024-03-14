@@ -130,10 +130,7 @@ class ReinforceConfig(MethodConfig):
         returns: TensorType["batch_size", "response_size"],
         mask: TensorType["batch_size", "response_size"],
     ):
-        """PPO objective function.
-        References:
-        - https://stable-baselines.readthedocs.io/en/master/modules/ppo2.html
-        """
+        """REINFORCE objective function."""
         n = mask.sum()
 
         log_ratio = (logprobs - old_logprobs) * mask
