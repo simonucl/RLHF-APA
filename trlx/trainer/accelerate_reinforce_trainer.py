@@ -17,8 +17,6 @@ from trlx.data.configs import TRLConfig
 from trlx.data.reinforce_types import ReinforceRLElement, ReinforceRLBatch
 from trlx.models.modeling_ppo import (
     AdaptiveKLController,
-    AutoModelForCausalLMWithHydraValueHead,
-    AutoModelForSeq2SeqLMWithHydraValueHead,
     FixedKLController,
 )
 from trlx.pipeline.offline_pipeline import PromptPipeline
