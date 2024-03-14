@@ -87,7 +87,7 @@ def main(hparams={}):
         seq_length=4096,
         epochs=10000,
         total_steps=20000,
-        batch_size=1,
+        batch_size=6,
         checkpoint_interval=200,
         eval_interval=200,
         pipeline="PromptPipeline",
@@ -101,7 +101,7 @@ def main(hparams={}):
     scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1e-6)),
     method=SPPOConfig(
         name="SPPOConfig",
-        num_rollouts=4,
+        num_rollouts=128,
         chunk_size=2,
         ppo_epochs=2,
         init_kl_coef=0.1,
@@ -146,7 +146,7 @@ def main(hparams={}):
     with open(val_file, "r") as json_file:
         val_data = json.load(json_file)
     prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
-    eval_prompts = prompts[:5]
+    eval_prompts = prompts[:50]
 
     trlx.train(
         prompts=prompts,
