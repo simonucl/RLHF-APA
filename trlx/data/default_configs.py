@@ -1,6 +1,7 @@
 from trlx.models.modeling_ilql import ILQLConfig
 from trlx.models.modeling_ppo import PPOConfig
 from trlx.models.modeling_sppo import SPPOConfig
+from trlx.models.modeling_reinforce import ReinforceConfig
 from trlx.trainer.accelerate_sft_trainer import SFTConfig
 
 from .configs import (
@@ -78,6 +79,96 @@ def default_ppo_config():
         scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1.0e-4)),
         method=PPOConfig(
             name="PPOConfig",
+            num_rollouts=128,
+            chunk_size=128,
+            ppo_epochs=4,
+            init_kl_coef=0.05,
+            target=6,
+            horizon=10000,
+            gamma=1,
+            lam=0.95,
+            cliprange=0.2,
+            cliprange_value=0.2,
+            vf_coef=1,
+            scale_reward="ignored",
+            ref_mean=None,
+            ref_std=None,
+            cliprange_reward=10,
+            gen_kwargs=dict(
+                max_new_tokens=40,
+                top_k=0,
+                top_p=1.0,
+                do_sample=True,
+            ),
+        ),
+    )
+
+
+def default_ppo_config():
+    return TRLConfig(
+        train=TrainConfig(
+            seq_length=1024,
+            epochs=100,
+            total_steps=10000,
+            batch_size=32,
+            checkpoint_interval=10000,
+            eval_interval=100,
+            pipeline="PromptPipeline",
+            trainer="AcceleratePPOTrainer",
+        ),
+        model=ModelConfig(model_path="lvwerra/gpt2-imdb", num_layers_unfrozen=2),
+        tokenizer=TokenizerConfig(tokenizer_path="gpt2", truncation_side="right"),
+        optimizer=OptimizerConfig(
+            name="adamw", kwargs=dict(lr=1.0e-4, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)
+        ),
+        scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1.0e-4)),
+        method=PPOConfig(
+            name="PPOConfig",
+            num_rollouts=128,
+            chunk_size=128,
+            ppo_epochs=4,
+            init_kl_coef=0.05,
+            target=6,
+            horizon=10000,
+            gamma=1,
+            lam=0.95,
+            cliprange=0.2,
+            cliprange_value=0.2,
+            vf_coef=1,
+            scale_reward="ignored",
+            ref_mean=None,
+            ref_std=None,
+            cliprange_reward=10,
+            gen_kwargs=dict(
+                max_new_tokens=40,
+                top_k=0,
+                top_p=1.0,
+                do_sample=True,
+            ),
+        ),
+    )
+
+
+def default_reinforce_config():
+    return TRLConfig(
+        train=TrainConfig(
+            seq_length=1024,
+            epochs=100,
+            total_steps=10000,
+            batch_size=32,
+            checkpoint_interval=10000,
+            eval_interval=100,
+            pipeline="PromptPipeline",
+            trainer="AccelerateReinforceTrainer",
+        ),
+        model=ModelConfig(model_path="lvwerra/gpt2-imdb", num_layers_unfrozen=2),
+        tokenizer=TokenizerConfig(tokenizer_path="gpt2", truncation_side="right"),
+        optimizer=OptimizerConfig(
+            name="adamw", kwargs=dict(lr=1.0e-4, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)
+        ),
+        scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1.0e-4)),
+        method=ReinforceConfig(
+            name="ReinforceConfig",
             num_rollouts=128,
             chunk_size=128,
             ppo_epochs=4,
