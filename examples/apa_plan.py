@@ -112,6 +112,7 @@ def main(hparams={}):
         cliprange=100,
         cliprange_value=100,
         vf_coef=1,
+        scale_reward="none",
         ref_mean=None,
         ref_std=None,
         loss_str=LOSS,
