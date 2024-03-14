@@ -190,6 +190,8 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
                 attention_mask[:, start:end],
             )
 
+        print("logprobs shape:", logprobs.shape)
+        print("old_logprobs shape:", old_logprobs.shape)
         loss, stats = self.config.method.loss(
             logprobs=logprobs,
             old_logprobs=old_logprobs,
