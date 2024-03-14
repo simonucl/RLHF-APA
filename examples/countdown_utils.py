@@ -162,31 +162,50 @@ def metric_fn(search_path, mode="sft"):
 def reward_fn(samples, prompts, outputs):
     rewards = []
     for sample in samples:
-        sample = sample + "Goal Reached"
+        sample = sample + " Goal Reached"
         rating, _ = metric_fn(sample)
         rewards.append(rating)
     return rewards
     
 if __name__ == "__main__":
-    trajectory = """Current State: 47:[42, 61, 66], Operations: []
-Exploring Operation: 66-42=24, Resulting Numbers: [61, 24]
-Generated Node #0,0: 47:[61, 24] Operation: 66-42=24
+    trajectory = """Current State: 53:[56, 52, 45, 10], Operations: []
+Exploring Operation: 56-10=46, Resulting Numbers: [52, 45, 46]
+Generated Node #0,0: 53:[52, 45, 46] Operation: 56-10=46
 Moving to Node #0,0
-Current State: 47:[61, 24], Operations: ['66-42=24']
-Exploring Operation: 61-24=37, Resulting Numbers: [37]
-37,47 unequal: No Solution
+Current State: 53:[52, 45, 46], Operations: ['56-10=46']
+Exploring Operation: 45+46=91, Resulting Numbers: [52, 91]
+Generated Node #0,0,0: 53:[52, 91] Operation: 45+46=91
+Moving to Node #0,0,0
+Current State: 53:[52, 91], Operations: ['56-10=46', '45+46=91']
+Exploring Operation: 91-52=39, Resulting Numbers: [39]
+39,53 unequal: No Solution
+Moving to Node #0,0,0,0
+Current State: 53:[39], Operations: ['56-10=46', '45+46=91', '91-52=39']
+No solution found.], Operations: ['56+46=91', '91-52=39']
+Exploring Operation: 52+91=145, Resulting Numbers: [145]
+145,53 unequal: No Solution
 Moving to Node #0,0
-Current State: 47:[61, 24], Operations: ['66-42=24']
-Exploring Operation: 61+24=85, Resulting Numbers: [85]
-85,47 unequal: No Solution
-Moving to Node #0
-Current State: 47:[42, 61, 66], Operations: []
-Exploring Operation: 61-42=19, Resulting Numbers: [66, 19]
-Generated Node #0,1: 47:[66, 19] Operation: 61-42=19
-Moving to Node #0,1
-Current State: 47:[66, 19], Operations: ['61-42=19']
-Exploring Operation: 66-19=47, Resulting Numbers: [47]
-47,47 equal: Goal Reached47,47 equal: Goal Reached"""
-    result = parse_trajectory(trajectory, mode="sft")
-    print(result)
+Current State: 53:[52, 45, 46], Operations: ['56-10=46']
+Exploring Operation: 52+45=97, Resulting Numbers: [46, 97]
+Generated Node #0,0,1: 53:[46, 97] Operation: 52+45=97
+Moving to Node #0,0,1
+Current State: 53:[46, 97], Operations: ['56-10=46', '52+45=97']
+Exploring Operation: 97-46=51, Resulting Numbers: [51]
+51,53 unequal: No Solution
+Moving to Node #0,0,1
+Current State: 53:[46, 97], Operations: ['56-10=46', '52+45=97']
+Exploring Operation: 46+97=145, Resulting Numbers: [145]
+145,53 unequal: No Solution
+Moving to Node #0,0
+Current State: 53:[52, 45, 46], Operations: ['56-10=46']
+Exploring Operation: 52+46=98, Resulting Numbers: [45, 98]
+Generated Node #0,0,2: 53:[45, 98] Operation: 52+46=98
+Moving to Node #0,0,2
+Current State: 53:[45, 98], Operations: ['56-10=46', '52+46=98']
+Exploring Operation: 98-45=53, Resulting Numbers: [53]
+53,53 equal:"""
+    samples = [trajectory]
+    prompts = []
+    outputs = []
+    print(reward_fn(samples, prompts, outputs))
     
