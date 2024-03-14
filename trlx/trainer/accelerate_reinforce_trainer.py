@@ -192,6 +192,9 @@ class AccelerateReinforceTrainer(AccelerateRLTrainerNoV):
 
         print("logprobs shape:", logprobs.shape)
         print("old_logprobs shape:", old_logprobs.shape)
+        print("mask shape:", mask.shape)
+        print("old_rewards shape:", old_rewards.shape)
+        print("kl shape:", kl.shape)
         loss, stats = self.config.method.loss(
             logprobs=logprobs,
             old_logprobs=old_logprobs,
