@@ -70,6 +70,8 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
             self.model, self.opt, self.scheduler, rollout_loader
         )
 
+        import logging
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
         self.accelerator.load_state('/scr/kanishkg/trl/output/checkpoint_02800/')
         self.store.clear_history()  # Clear the rollout store
 
