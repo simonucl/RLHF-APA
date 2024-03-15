@@ -276,6 +276,12 @@ class AccelerateRLTrainer(BaseRLTrainer):
     def save(self, directory: Optional[str] = None, **kwargs):
         """Creates a checkpoint of the optimizer, scheduler and model"""
         self.accelerator.save_state(directory or self.config.train.checkpoint_dir, **kwargs)
+        # save optimizerm scheduler and model individually
+        self.accelerator.wait_for_everyone()
+        if self.accelerator.is_main_process:
+            self.accelerator.save(self.opt, os.path.join(directory or self.config.train.checkpoint_dir, "optimizer.pt"))
+            self.accelerator.save(self.scheduler, os.path.join(directory or self.config.train.checkpoint_dir, "scheduler.pt"))
+            self.accelerator.unwrap_model(self.model).save_pretrained(directory or self.config.train.checkpoint_dir)
 
     def load(self, directory: Optional[str] = None, **kwargs):
         """Load checkpoint of optimizer, scheduler and a model"""
