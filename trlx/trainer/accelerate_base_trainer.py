@@ -282,6 +282,11 @@ class AccelerateRLTrainer(BaseRLTrainer):
             self.accelerator.save(self.opt, os.path.join(directory or self.config.train.checkpoint_dir, "optimizer.pt"))
             self.accelerator.save(self.scheduler, os.path.join(directory or self.config.train.checkpoint_dir, "scheduler.pt"))
             self.accelerator.unwrap_model(self.model).save_pretrained(directory or self.config.train.checkpoint_dir)
+            self.tokenizer.save_pretrained(directory or self.config.train.checkpoint_dir)
+            # save torch state for all models
+            torch.save(self.model.state_dict(), os.path.join(directory or self.config.train.checkpoint_dir, "model.pt"))
+
+                
 
     def load(self, directory: Optional[str] = None, **kwargs):
         """Load checkpoint of optimizer, scheduler and a model"""
