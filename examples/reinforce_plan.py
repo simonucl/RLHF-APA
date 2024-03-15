@@ -109,15 +109,15 @@ def main(hparams={}):
         horizon=10000,
         gamma=1,
         lam=0.95,
-        cliprange=100,
+        cliprange=0.1,
         scale_reward="none",
         ref_mean=None,
         ref_std=None,
-        cliprange_reward=100,
+        cliprange_reward=1,
         gen_kwargs=dict(
             max_new_tokens=4000,
             do_sample=True,
-            temperature=0.2,
+            temperature=0.8,
         ),
     ),
 )
