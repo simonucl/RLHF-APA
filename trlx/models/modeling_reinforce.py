@@ -155,7 +155,7 @@ class ReinforceConfig(MethodConfig):
         # print(f"pg_loss: {pg_loss.shape}")
         # print(f"kl requires grad {kl.requires_grad}")
         kl_loss = (kl * mask).sum() / n
-        loss = pg_loss # + kl_loss
+        loss = pg_loss
 
         stats = dict(
             losses=dict(
