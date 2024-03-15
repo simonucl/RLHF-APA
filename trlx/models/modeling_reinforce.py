@@ -164,7 +164,10 @@ class ReinforceConfig(MethodConfig):
                 pg_loss=pg_loss.item(),
                 nll_loss=nll_loss.mean().item(),
             ),
-            returns=returns.mean().item(),
+            returns=dict(
+                returns.mean().item(),
+                returns_norm.mean().item(),
+            ),
             policy=dict(approx_kl=approx_kl.item()),
             ratio=(ratio * mask).sum() / n,
             padding_percentage=n / mask.numel(),
