@@ -145,15 +145,17 @@ class ReinforceConfig(MethodConfig):
         bias_estimate = mean
         # REINFORCE loss
         # returns are of shape (batch_size,)
+        print(returns)
         nll_loss = -(logprobs * mask).sum(1) / n
         returns_unbiased = returns - bias_estimate
+        print(returns_unbiased)
         # clip returns to 0, to avoid negative values
         returns_unbiased = torch.clamp(returns_unbiased, min=0)
         pg_loss = (nll_loss * returns_unbiased).mean()
         # print(f"pg_loss: {pg_loss.shape}")
         # print(f"kl requires grad {kl.requires_grad}")
         kl_loss = (kl * mask).sum() / n
-        loss = pg_loss + kl_loss
+        loss = pg_loss # + kl_loss
 
         stats = dict(
             losses=dict(
