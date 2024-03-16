@@ -71,7 +71,7 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
         )
         # import logging
         # logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-        # self.accelerator.load_state('/scr/kanishkg/trl/outputs/checkpoint_02800/')
+        self.accelerator.load_state('/scr/kanishkg/trl/outputs2/checkpoint_00001/')
         self.store.clear_history()  # Clear the rollout store
 
         # Setup a reference model when hydra heads are not used
