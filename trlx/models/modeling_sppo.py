@@ -335,6 +335,7 @@ class AutoModelForCausalLMWithValueHead(PreTrainedModelWrapper):
             base_model_state_dict[f"v_head.{k}"] = v
         return base_model_state_dict
 
+
     def post_init(self, state_dict):
         """
         Adds the state dictionary of the value head to the state dictionary of the wrapped model
@@ -412,6 +413,43 @@ class AutoModelForCausalLMWithHydraValueHead(AutoModelForCausalLMWithValueHead):
             return hydra_outputs.logits
         return hydra_outputs
 
+    def state_dict(self, *args, **kwargs):
+        """
+        Returns the state dictionary of the model. We add the state dictionary of the value head
+        to the state dictionary of the wrapped model by prepending the key with `v_head.`.
+        """
+        base_model_state_dict = self.base_model.state_dict(*args, **kwargs)
+        v_head_state_dict = self.v_head.state_dict(*args, **kwargs)
+        v_net_state_dict = self.v_net.state_dict(*args, **kwargs)
+        model_state_dict = {}
+        for k, v in base_model_state_dict.items():
+            model_state_dict[f"base_model.{k}"] = v
+        for k, v in v_head_state_dict.items():
+            model_state_dict[f"v_head.{k}"] = v
+        for k, v in v_net_state_dict.items():
+            model_state_dict[f"v_net.{k}"] = v
+        return model_state_dict
+    
+    def save_pretrained(self, *args, **kwargs):
+        """Save the pretrained model to a directory. This method is a wrapper
+        around `transformers.PreTrainedModel.save_pretrained`. Please refer to
+        the documentation of `transformers.PreTrainedModel.save_pretrained` for
+        more information.
+
+        Args:
+            *args (`list`, *optional*):
+                Positional arguments passed along to the underlying model's
+                `save_pretrained` method.
+            **kwargs (`dict`, *optional*):
+                Keyword arguments passed along to the underlying model's
+                `save_pretrained` method.
+        """
+        state_dict = kwargs.pop("state_dict", None)
+        if state_dict is None:
+            state_dict = self.state_dict()
+            kwargs["state_dict"] = state_dict
+
+        return self.base_model.save_pretrained(*args, **kwargs)
 
 class ModelBranch(transformers.PreTrainedModel):
     """Implements the frozen upper trunk of the pretrained reference model used

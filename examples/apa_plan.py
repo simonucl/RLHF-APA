@@ -32,7 +32,8 @@ import random
 
 RANDOM_SEED = 42
 LOSS = "square" # "square" or "log", square for APA and log for AWR
-ADV_COEFF_SQ = 0.5
+ADV_COEFF_SQ = 0.5 # TODO: tune this. Options: 0.5, 1, 5, 10
+LR = 1e-6 # TODO: tune this. Options: 1e-5, 1e-7
 ADV_COEFF_LOG = 0.5
 OUTPUT_DIR = "/scr/kanishkg/trl/outputs_2"
 
@@ -40,39 +41,6 @@ random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 torch.manual_seed(RANDOM_SEED)
 torch.cuda.manual_seed(RANDOM_SEED) 
-
-
-
-# config_name = MODEL_SIZE 
-# if config_name == "125M":
-#     default_config.train.batch_size = 8
-#     default_config.method.chunk_size = 16
-#     default_config.train.total_steps = 20000
-#     default_config.model.model_path = "Dahoas/pythia-125M-static-sft"
-#     default_config.tokenizer.tokenizer_path = "EleutherAI/gpt-neox-20b"
-#     default_config.method.num_rollouts = 128
-# elif config_name == "1B":
-#     default_config.train.batch_size = 2
-#     default_config.train.total_steps = 20000
-#     default_config.model.model_path = "Dahoas/pythia-1B-static-sft"
-#     default_config.tokenizer.tokenizer_path = "EleutherAI/gpt-neox-20b"
-#     default_config.method.chunk_size = 4
-# elif config_name == "6B":
-#     default_config.train.batch_size = 1
-#     default_config.train.total_steps = 20000
-#     default_config.model.model_path = "Dahoas/pythia-6B-static-sft" # "databricks/dolly-v2-7b" #  
-#     default_config.tokenizer.tokenizer_path =  "EleutherAI/gpt-neox-20b" # "databricks/dolly-v2-7b" #
-#     default_config.method.chunk_size = 1 
-# elif config_name == "20B":
-#     default_config.train.seq_length = 512
-#     default_config.train.batch_size = 1
-#     default_config.train.total_steps = 8000
-#     default_config.model.model_path = "EleutherAI/gpt-neox-20b"
-#     default_config.tokenizer.tokenizer_path = "EleutherAI/gpt-neox-20b"
-#     default_config.method.num_rollouts = 16
-#     default_config.method.chunk_size = 4
-#     default_config.method.ppo_epochs = 2
-
 
 def prepare_tensor(name: str, input):
     t = client_util.InferInput(name, input.shape, np_to_triton_dtype(input.dtype))
@@ -97,8 +65,8 @@ def main(hparams={}):
     ),
     model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500/', num_layers_unfrozen=-1),
     tokenizer=TokenizerConfig(tokenizer_path="EleutherAI/gpt-neo-1.3B", padding_side="left"),
-    optimizer=OptimizerConfig(name="adamw", kwargs=dict(lr=1e-6, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)),
-    scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=1e-6)),
+    optimizer=OptimizerConfig(name="adamw", kwargs=dict(lr=LR, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)),
+    scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=LR)),
     method=SPPOConfig(
         name="SPPOConfig",
         num_rollouts=32,
