@@ -63,8 +63,8 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
         rollout_loader: DataLoader = self.store.create_loader(self.config.train.batch_size, shuffle=True)
         # device = torch.cuda.device_count() - 3
         device = self.accelerator.device 
-        self.ref_model = deepcopy(self.model).eval().to(device) 
-        self.ref_model = deepcopy(self.base_model).eval().to(device) 
+        # self.ref_model = deepcopy(self.model).eval().to(device) 
+        self.ref_model = deepcopy(self.model.base_model).eval().to(device) 
         # self.ref_model = self.ref_model
         # Prepare multi-GPU acceleration
         self.model, self.opt, self.scheduler, rollout_loader = self.accelerator.prepare(
