@@ -152,6 +152,11 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
         base_model_state_dict = {k.split('base_model.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'base_model' in k}
         model.base_model.load_state_dict(base_model_state_dict)
 
+        # clean up
+        del state_dict
+        gc.collect()
+        
+
         if isinstance(pretrained_model_name_or_path, str):
             filename = os.path.join(pretrained_model_name_or_path, "pytorch_model.bin")
             sharded_index_filename = os.path.join(pretrained_model_name_or_path, "pytorch_model.bin.index.json")
