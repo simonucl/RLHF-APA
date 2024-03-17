@@ -20,9 +20,9 @@ parser.add_argument('--ckpt', type=str, default='ckpt/ckpt_best.pt')
 parser.add_argument('--pt', type=str, default='ckpt/ckpt_best.pt')
 parser.add_argument("-n", "--num",type=int, default=10)
 parser.add_argument("-o", "--offset",type=int, default=0)
-parser.add_argument("--data_dir", type=str, default="/scr/kanishkg/rational-cot/data/")
-parser.add_argument("-d", "--data",type=str, default="val_b3_t100_n100000_random.json")
-parser.add_argument("-b", "--batch_size",type=int, default=1)
+parser.add_argument("--data_dir", type=str, default="/scr/kanishkg/rational-cot/data/b4_3_random")
+parser.add_argument("-d", "--data",type=str, default="val1_b4_t100_n500000_random.json")
+parser.add_argument("-b", "--batch_size",type=int, default=32)
 parser.add_argument("-c", "--ctx",type=int, default=4096)
 parser.add_argument("-t", "--temperature",type=float, default=0.0)
 
@@ -62,9 +62,9 @@ if mode=='apa':
     model = AutoModelForCausalLMWithHydraValueHead.from_pretrained('/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500')
     state_dict = torch.load(args.pt)
 
-    base_model_state_dict = {k:state_dict['module'][k] for k in state_dict['module'].keys() if 'v_head' not in k}
+    base_model_state_dict = {k.split('base_model.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'base_model' in k}
     model.base_model.load_state_dict(base_model_state_dict)
-    model.post_init(state_dict=state_dict)
+    # model.post_init(state_dict=state_dict)
 else:
     model = GPTNeoForCausalLM.from_pretrained('/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500', torch_dtype=torch.bfloat16, attn_implementation='flash_attention_2')
     state_dict = torch.load(args.pt)
