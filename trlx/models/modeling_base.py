@@ -150,10 +150,13 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
         model = cls(base_model, **wrapped_model_kwargs)
         # logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
         state_dict = torch.load('/scr/kanishkg/trl/outputs_2/checkpoint_02600/pytorch_model/mp_rank_00_model_states.pt')
-        model.load_state_dict(state_dict['module'])
-        # base_model_state_dict = {k.split('base_model.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'base_model' in k}
-        # model.base_model.load_state_dict(base_model_state_dict)
-
+        # model.load_state_dict(state_dict['module'])
+        base_model_state_dict = {k.split('base_model.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'base_model' in k}
+        model.base_model.load_state_dict(base_model_state_dict)
+        v_head_state_dict = {k.split('v_head.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'v_head' in k}
+        model.v_head.load_state_dict(v_head_state_dict)
+        v_net_state_dict = {k.split('v_net.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'v_net' in k}
+        model.v_net.load_state_dict(v_net_state_dict)
         # clean up
         del state_dict
         gc.collect()
