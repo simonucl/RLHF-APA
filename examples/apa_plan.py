@@ -30,7 +30,7 @@ import random
 # parser = argparse.ArgumentParser(description='Train with APA.')
 # parser.add_argument('--ckpt', type=str, default=None, help='Path to the checkpoint to load')
 
-RANDOM_SEED = 42
+RANDOM_SEED = 43
 LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 0.5 # TODO: tune this. Options: 0.5, 1, 5, 10
 LR = 1e-6 # TODO: tune this. Options: 1e-5, 1e-7
@@ -66,7 +66,7 @@ def main(hparams={}):
     model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500/', num_layers_unfrozen=-1),
     tokenizer=TokenizerConfig(tokenizer_path="EleutherAI/gpt-neo-1.3B", padding_side="left"),
     optimizer=OptimizerConfig(name="adamw", kwargs=dict(lr=LR, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)),
-    scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=LR)),
+    scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=LR, )),
     method=SPPOConfig(
         name="SPPOConfig",
         num_rollouts=32,
