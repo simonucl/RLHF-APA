@@ -35,7 +35,7 @@ LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 0.5 # TODO: tune this. Options: 0.5, 1, 5, 10
 LR = 1e-6 # TODO: tune this. Options: 1e-5, 1e-7
 ADV_COEFF_LOG = 0.5
-OUTPUT_DIR = "/scr/kanishkg/trl/outputs_2"
+OUTPUT_DIR = "/scr/kanishkg/trl/outputs_3"
 
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
@@ -60,7 +60,7 @@ def main(hparams={}):
         eval_interval=100,
         pipeline="PromptPipeline",
         trainer="AccelerateSPPOTrainer",
-        checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan2",
+        checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan3",
         seed=RANDOM_SEED,
     ),
     model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500/', num_layers_unfrozen=-1),
