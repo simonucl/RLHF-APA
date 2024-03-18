@@ -149,7 +149,7 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
         print(cls._auto_model_parent_class, base_model)
         model = cls(base_model, **wrapped_model_kwargs)
         # logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-        state_dict = torch.load('/scr/kanishkg/trl/outputs_4/checkpoint_0500/pytorch_model/mp_rank_00_model_states.pt')
+        state_dict = torch.load('/scr/kanishkg/trl/outputs_4/checkpoint_00500/pytorch_model/mp_rank_00_model_states.pt')
         # model.load_state_dict(state_dict['module'])
         base_model_state_dict = {k.split('base_model.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'base_model' in k}
         model.base_model.load_state_dict(base_model_state_dict)
