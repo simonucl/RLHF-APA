@@ -71,7 +71,7 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
             self.model, self.opt, self.scheduler, rollout_loader
         )
         # TODO: LOAD
-        self.accelerator.load_state('/scr/kanishkg/trl/outputs_3/checkpoint_00100/')
+        # self.accelerator.load_state('/scr/kanishkg/trl/outputs_3/checkpoint_00100/')
         self.store.clear_history()  # Clear the rollout store
 
         # Setup a reference model when hydra heads are not used
