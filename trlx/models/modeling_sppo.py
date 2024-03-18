@@ -215,7 +215,9 @@ class SPPOConfig(MethodConfig):
         log_ratio_star = torch.clamp((logprobs - self.adv_coeff_sq*advantages - old_logprobs.detach())* mask, -1, 1)
         pg_loss = torch.sum(torch.max(pg_loss1, pg_loss2) * mask) / n
         pg_clipfrac = torch.sum((pg_loss2 > pg_loss1).float() * mask) / n
-        sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages - old_logprobs.detach()) * mask) ** 2)  / n
+        # sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages - 0*old_logprobs.detach()) * mask) ** 2)  / n
+        sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages) * mask) ** 2)  / n
+
 
         awac_loss = torch.sum(-logprobs*torch.exp(self.adv_coeff_log*advantages)* mask) / n
         if self.loss_str == "square":
