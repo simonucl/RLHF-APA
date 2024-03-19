@@ -33,7 +33,7 @@ import random
 RANDOM_SEED = 45
 LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 10 # TODO: tune this. Options: 0.5, 1, 5, 10
-LR = 1e-7 # TODO: tune this. Options: 1e-5, 1e-7
+LR = 1e-6 # TODO: tune this. Options: 1e-5, 1e-7
 ADV_COEFF_LOG = 0.5
 OUTPUT_DIR = "/scr/kanishkg/trl/outputs_7"
 
