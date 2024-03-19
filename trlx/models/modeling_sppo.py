@@ -212,10 +212,12 @@ class SPPOConfig(MethodConfig):
             1.0 + self.cliprange,
         )
 
+        masked_lp = torch.sum(logprobs * mask) / n 
+        masked_adv = torch.sum(advantages * mask) / n
         log_ratio_star = torch.clamp((logprobs - self.adv_coeff_sq*advantages - old_logprobs.detach())* mask, -1, 1)
         pg_loss = torch.sum(torch.max(pg_loss1, pg_loss2) * mask) / n
         pg_clipfrac = torch.sum((pg_loss2 > pg_loss1).float() * mask) / n
-        sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages - old_logprobs.detach()) * mask) ** 2)  / n
+        sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages - 0*old_logprobs.detach()) * mask) ** 2)  / n
 
 
         awac_loss = torch.sum(-logprobs*torch.exp(self.adv_coeff_log*advantages)* mask) / n
@@ -230,6 +232,8 @@ class SPPOConfig(MethodConfig):
                 policy_loss=pg_loss.item(),
                 sq_loss=sq_loss.item(),
                 awac_loss = awac_loss.item(),
+                logprobs=masked_lp.mean().item(),
+                advantages=masked_adv.mean().item(),
                 # sq_q_loss=sq_q_loss.item(),
                 value_loss=vf_loss.item(),
             ),
