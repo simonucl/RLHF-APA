@@ -221,7 +221,7 @@ class SPPOConfig(MethodConfig):
         # ent_loss = torch.sum((logprobs - self.adv_coeff_sq*advantages) * mask)  / n
         entropy = -torch.sum(torch.exp(logprobs) * logprobs * mask) / n
         adv_component = -torch.sum(self.adv_coeff_sq*logprobs * advantages * mask) / n
-        ent_loss = -0.01*entropy + adv_component
+        ent_loss = -0.1*entropy + adv_component
 
 
 
