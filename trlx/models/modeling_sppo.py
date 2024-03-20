@@ -218,7 +218,10 @@ class SPPOConfig(MethodConfig):
         pg_loss = torch.sum(torch.max(pg_loss1, pg_loss2) * mask) / n
         pg_clipfrac = torch.sum((pg_loss2 > pg_loss1).float() * mask) / n
         sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages - 0*old_logprobs.detach()) * mask) ** 2)  / n
-        ent_loss = torch.sum((logprobs - self.adv_coeff_sq*advantages) * mask)  / n
+        # ent_loss = torch.sum((logprobs - self.adv_coeff_sq*advantages) * mask)  / n
+        entropy = -torch.sum(torch.exp(logprobs) * logprobs * mask) / n
+        adv_component = -torch.sum(self.adv_coeff_sq*logprobs * advantages * mask) / n
+        ent_loss = -entropy + adv_component
 
 
 
@@ -238,6 +241,8 @@ class SPPOConfig(MethodConfig):
                 awac_loss = awac_loss.item(),
                 logprobs=masked_lp.mean().item(),
                 advantages=masked_adv.mean().item(),
+                entropy=entropy.item(),
+                adv_component=adv_component.item(),
                 # sq_q_loss=sq_q_loss.item(),
                 value_loss=vf_loss.item(),
             ),
