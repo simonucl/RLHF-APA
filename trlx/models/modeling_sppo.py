@@ -229,7 +229,7 @@ class SPPOConfig(MethodConfig):
 
         awac_loss = torch.sum(-logprobs*torch.exp(self.adv_coeff_log*advantages)* mask) / n
         if self.loss_str == "square":
-            loss = simple_sq_loss + self.vf_coef * vf_loss
+            loss = sq_loss + self.vf_coef * vf_loss
         elif self.loss_str == "log":
             loss = awac_loss +  self.vf_coef * vf_loss 
 
