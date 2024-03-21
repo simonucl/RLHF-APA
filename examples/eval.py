@@ -109,3 +109,10 @@ print(f"Average true rating: {np.mean(true_rating)}")
 print(f"Accuracy: {np.mean([r > 0 for r in pred_ratings])}")
 print(f"True Accuracy: {np.mean([r > 0 for r in true_rating])}")
 
+
+# open ckpt dir
+ckpt_dir = os.path.dirname(args.pt)
+# save results
+results_file = os.path.join(ckpt_dir, f"results_{args.data.replace('/','_')}_{args.num}_{args.offset}")
+with open(results_file, "w") as f:
+    json.dump({"trajectories": predictions, "ratings": pred_ratings.tolist(), "reasons": pred_reasons}, f, indent=4)
