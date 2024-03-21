@@ -61,6 +61,7 @@ mode = 'apa'
 if mode=='apa':
     model = AutoModelForCausalLMWithHydraValueHead.from_pretrained('/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500')
     state_dict = torch.load(args.pt)
+    print(args.pt)
 
     base_model_state_dict = {k.split('base_model.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'base_model' in k}
     model.base_model.load_state_dict(base_model_state_dict)
