@@ -217,8 +217,9 @@ class SPPOConfig(MethodConfig):
         log_ratio_star = torch.clamp((logprobs - self.adv_coeff_sq*advantages - old_logprobs.detach())* mask, -1, 1)
         pg_loss = torch.sum(torch.max(pg_loss1, pg_loss2) * mask) / n
         pg_clipfrac = torch.sum((pg_loss2 > pg_loss1).float() * mask) / n
-        sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages - 0*old_logprobs.detach()) * mask) ** 2)  / n
-        # ent_loss = torch.sum((logprobs - self.adv_coeff_sq*advantages) * mask)  / n
+        sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages - old_logprobs.detach()) * mask) ** 2)  / n
+        simple_sq_loss = torch.sum(((logprobs - self.adv_coeff_sq*advantages) * mask) ** 2)  / n
+        ent_loss = torch.sum((logprobs - self.adv_coeff_sq*advantages) * mask)  / n
         entropy = -torch.sum(torch.exp(logprobs) * logprobs * mask) / n
         adv_component = -torch.sum(self.adv_coeff_sq*logprobs * advantages * mask) / n
         ent_loss = -0.1*entropy + adv_component
@@ -228,7 +229,7 @@ class SPPOConfig(MethodConfig):
 
         awac_loss = torch.sum(-logprobs*torch.exp(self.adv_coeff_log*advantages)* mask) / n
         if self.loss_str == "square":
-            loss = ent_loss + self.vf_coef * vf_loss
+            loss = simple_sq_loss + self.vf_coef * vf_loss
         elif self.loss_str == "log":
             loss = awac_loss +  self.vf_coef * vf_loss 
 
@@ -237,6 +238,7 @@ class SPPOConfig(MethodConfig):
                 total_loss=loss.item(),
                 policy_loss=pg_loss.item(),
                 sq_loss=sq_loss.item(),
+                simple_sq_loss=simple_sq_loss.item(),
                 ent_loss=ent_loss.item(),
                 awac_loss = awac_loss.item(),
                 logprobs=masked_lp.mean().item(),
