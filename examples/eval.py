@@ -116,4 +116,4 @@ ckpt_dir = os.path.dirname(args.pt)
 # save results
 results_file = os.path.join(ckpt_dir, f"results_{args.data.replace('/','_')}_{args.num}_{args.offset}")
 with open(results_file, "w") as f:
-    json.dump({"trajectories": predictions, "ratings": pred_ratings.tolist(), "reasons": pred_reasons}, f, indent=4)
+    json.dump({"trajectories": predictions, "ratings": pred_ratings, "reasons": pred_reasons}, f, indent=4)
