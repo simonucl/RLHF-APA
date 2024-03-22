@@ -90,7 +90,7 @@ def main(hparams={}):
         gen_kwargs=dict(
             max_new_tokens=4000,
             do_sample=True,
-            temperature=1.5,
+            temperature=1.0,
         ),
     ),
 )
