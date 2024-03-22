@@ -157,8 +157,8 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
         # v_net_state_dict = {k.split('v_net.')[1]:state_dict['module'][k] for k in state_dict['module'].keys() if 'v_net' in k}
         # model.v_net.load_state_dict(v_net_state_dict)
         # clean up
-        del state_dict
-        gc.collect()
+        # del state_dict
+        # gc.collect()
         
 
         if isinstance(pretrained_model_name_or_path, str):
