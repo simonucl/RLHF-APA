@@ -63,7 +63,7 @@ def main(hparams={}):
         checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan7",
         seed=RANDOM_SEED,
     ),
-    model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/star3/checkpoint-17000/', num_layers_unfrozen=-1),
+    model=ModelConfig(model_path='/scr/kanishkg/rational-cot/star/star3/checkpoint-17000/', num_layers_unfrozen=-1),
     tokenizer=TokenizerConfig(tokenizer_path="EleutherAI/gpt-neo-1.3B", padding_side="left"),
     optimizer=OptimizerConfig(name="adamw", kwargs=dict(lr=LR, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)),
     scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=LR, )),
