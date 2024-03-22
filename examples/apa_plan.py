@@ -30,7 +30,7 @@ import random
 # parser = argparse.ArgumentParser(description='Train with APA.')
 # parser.add_argument('--ckpt', type=str, default=None, help='Path to the checkpoint to load')
 
-RANDOM_SEED = 43
+RANDOM_SEED = 44
 LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 0.5 # TODO: tune this. Options: 0.5, 1, 5, 10
 LR = 1e-6 # TODO: tune this. Options: 1e-5, 1e-7
