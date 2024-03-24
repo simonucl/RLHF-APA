@@ -35,7 +35,7 @@ LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 0.5 # TODO: tune this. Options: 0.5, 1, 5, 10
 LR = 1e-6 # TODO: tune this. Options: 1e-5, 1e-7
 ADV_COEFF_LOG = 0.5
-OUTPUT_DIR = "/scr/kanishkg/trl/outputs_star_3"
+OUTPUT_DIR = "/scr/kanishkg/trl/outputs_6n"
 
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
@@ -56,14 +56,14 @@ def main(hparams={}):
         epochs=10000,
         total_steps=20000,
         batch_size=8,
-        checkpoint_interval=100,
-        eval_interval=50,
+        checkpoint_interval=20,
+        eval_interval=20,
         pipeline="PromptPipeline",
         trainer="AccelerateSPPOTrainer",
-        checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan7",
+        checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan6n",
         seed=RANDOM_SEED,
     ),
-    model=ModelConfig(model_path='/scr/kanishkg/rational-cot/star/star3/checkpoint-17000/', num_layers_unfrozen=-1),
+    model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500/', num_layers_unfrozen=-1),
     tokenizer=TokenizerConfig(tokenizer_path="EleutherAI/gpt-neo-1.3B", padding_side="left"),
     optimizer=OptimizerConfig(name="adamw", kwargs=dict(lr=LR, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)),
     scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=LR, )),
