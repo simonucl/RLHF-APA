@@ -33,9 +33,9 @@ import random
 RANDOM_SEED = 45
 LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 0.5 # TODO: tune this. Options: 0.5, 1, 5, 10
-LR = 1e-6 # TODO: tune this. Options: 1e-5, 1e-7
+LR = 1e-7 # TODO: tune this. Options: 1e-5, 1e-7
 ADV_COEFF_LOG = 0.5
-OUTPUT_DIR = "/scr/kanishkg/trl/outputs_6n"
+OUTPUT_DIR = "/scr/kanishkg/trl/outputs_6x"
 
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
@@ -115,7 +115,7 @@ def main(hparams={}):
     with open(val_file, "r") as json_file:
         val_data = json.load(json_file)
     val_prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
-    eval_prompts = val_prompts[:50]
+    eval_prompts = val_prompts[:10]
 
     trlx.train(
         prompts=prompts,
