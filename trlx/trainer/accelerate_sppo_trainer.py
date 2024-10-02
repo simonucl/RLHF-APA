@@ -127,6 +127,7 @@ class AccelerateSPPOTrainer(AccelerateRLTrainer):
 
     def get_arch(self, config: TRLConfig):
         """Get the model"""
+        print("Getting arch!")
         model_class = AutoModelForCausalLMWithHydraValueHead
         if config.model.model_arch_type == "seq2seq":
             model_class = AutoModelForSeq2SeqLMWithHydraValueHead
