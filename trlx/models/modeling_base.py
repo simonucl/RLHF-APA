@@ -167,45 +167,45 @@ class PreTrainedModelWrapper(nn.Module, transformers.utils.PushToHubMixin):
             is_sharded = False
 
             
-            # model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path)
-            # if not os.path.exists(filename):
-                # try:
-                    # filename = hf_hub_download(pretrained_model_name_or_path, "pytorch_model.bin", revision=revision)
+            model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path)
+            if not os.path.exists(filename):
+                try:
+                    filename = hf_hub_download(pretrained_model_name_or_path, "pytorch_model.bin", revision=revision)
                 # Sharded
-                # except Exception:
-                    # if os.path.exists(sharded_index_filename):
-                        # index_file_name = sharded_index_filename
-                    # else:
-                        # index_file_name = hf_hub_download(
-                            # pretrained_model_name_or_path,
-                            # "pytorch_model.bin.index.json",
-                            # revision=revision,
-                        # )
-                    # with open(index_file_name, "r") as f:
-                        # index = json.load(f)
+                except Exception:
+                    if os.path.exists(sharded_index_filename):
+                        index_file_name = sharded_index_filename
+                    else:
+                        index_file_name = hf_hub_download(
+                            pretrained_model_name_or_path,
+                            "pytorch_model.bin.index.json",
+                            revision=revision,
+                        )
+                    with open(index_file_name, "r") as f:
+                        index = json.load(f)
                     # Collect files containing weights from supported modules
-                    # files_to_download = set()
-                    # for k, v in index["weight_map"].items():
-                        # if any([module in k for module in cls._supported_modules]):
-                            # files_to_download.add(v)
-                    # is_sharded = True
-# 
-            # if is_sharded:
+                    files_to_download = set()
+                    for k, v in index["weight_map"].items():
+                        if any([module in k for module in cls._supported_modules]):
+                            files_to_download.add(v)
+                    is_sharded = True
+
+            if is_sharded:
                 # Merge each shard into a state dict
                 # TODO: Optimize this to avoid wasting RAM
-                # state_dict = {}
-                # for shard_file in files_to_download:
-                    # filename = os.path.join(pretrained_model_name_or_path, shard_file)
+                state_dict = {}
+                for shard_file in files_to_download:
+                    filename = os.path.join(pretrained_model_name_or_path, shard_file)
                     # Download if shard file doesn't exist locally
-                    # if not os.path.exists(filename):
-                        # filename = hf_hub_download(pretrained_model_name_or_path, shard_file, revision=revision)
-                    # state_dict.update(torch.load(filename, map_location="cpu"))
-            # else:
-                # state_dict = torch.load(filename, map_location="cpu")
-        # else:
-            # state_dict = pretrained_model_name_or_path.state_dict()
-# 
-        # model.post_init(state_dict=state_dict)
+                    if not os.path.exists(filename):
+                        filename = hf_hub_download(pretrained_model_name_or_path, shard_file, revision=revision)
+                    state_dict.update(torch.load(filename, map_location="cpu"))
+            else:
+                state_dict = torch.load(filename, map_location="cpu")
+        else:
+            state_dict = pretrained_model_name_or_path.state_dict()
+
+        model.post_init(state_dict=state_dict)
         return model
 
     def save_pretrained(self, *args, **kwargs):
