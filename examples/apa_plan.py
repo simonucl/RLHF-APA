@@ -35,8 +35,9 @@ LOSS = "square" # "square" or "log", square for APA and log for AWR
 ADV_COEFF_SQ = 0.5 # TODO: tune this. Options: 0.5, 1, 5, 10
 LR = 1e-7 # TODO: tune this. Options: 1e-5, 1e-7
 ADV_COEFF_LOG = 0.5
-OUTPUT_DIR = "/scr/kanishkg/trl/outputs_6x"
-
+OUTPUT_DIR = "/mnt/data/RLHF-APA/outputs_6x"
+import os
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 torch.manual_seed(RANDOM_SEED)
@@ -60,10 +61,10 @@ def main(hparams={}):
         eval_interval=20,
         pipeline="PromptPipeline",
         trainer="AccelerateSPPOTrainer",
-        checkpoint_dir="/scr/kanishkg/trl/checkpoints/apa_plan6n",
+        checkpoint_dir="/mnt/data/RLHF-APA/checkpoints/apa_plan6n",
         seed=RANDOM_SEED,
     ),
-    model=ModelConfig(model_path='/scr/kanishkg/rational-cot/models/sft-mix-4-cd5e5/checkpoint-45500/', num_layers_unfrozen=-1),
+    model=ModelConfig(model_path='simonycl/sos-sft-base', num_layers_unfrozen=-1),
     tokenizer=TokenizerConfig(tokenizer_path="EleutherAI/gpt-neo-1.3B", padding_side="left"),
     optimizer=OptimizerConfig(name="adamw", kwargs=dict(lr=LR, betas=(0.9, 0.95), eps=1.0e-8, weight_decay=1.0e-6)),
     scheduler=SchedulerConfig(name="cosine_annealing", kwargs=dict(T_max=10000, eta_min=LR, )),
@@ -105,13 +106,13 @@ def main(hparams={}):
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "left"
 
-    data_file = os.path.join('/scr/kanishkg/rational-cot/data/b4_3_random', 'train1_b4_t100_n500000_random.json')
+    data_file = os.path.join('/mnt/data/stream-of-search/src/data/b4_3_random', 'train1_b4_t100_n500000_random.json')
     with open(data_file, "r") as json_file:
         data = json.load(json_file)
     prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in data]
 
     random.shuffle(prompts)
-    val_file = os.path.join('/scr/kanishkg/rational-cot/data/b4_3_random', 'val1_b4_t100_n500000_random.json')
+    val_file = os.path.join('/mnt/data/stream-of-search/src/data/b4_3_random', 'val1_b4_t100_n500000_random.json')
     with open(val_file, "r") as json_file:
         val_data = json.load(json_file)
     val_prompts = [tokenizer.bos_token + f"Current State: {sample['target']}:{sample['nums']}, Operations: []"  for sample in val_data]
